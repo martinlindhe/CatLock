@@ -3,9 +3,11 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.Collections.Generic;
 
+// TODO 1st: when started, run "turn off screen" command in linux after 5 seconds
+//		xset -display :0.0 dpms force off
 // TODO if lost focus, get focus
 // TODO paint window on all attached screens
-// TODO in fullscreen, on my desktop (xfce) my toolbar is always visible anyway. is that a xfce setting maybe?! other apps can fullscreen without it
+// FIXME in fullscreen, on my desktop (xfce) my toolbar is always visible anyway. is that a xfce setting maybe?! other apps can fullscreen without it
 // FIXME buttons are not exactly centered
 namespace CatLock
 {
@@ -43,12 +45,28 @@ namespace CatLock
 			this.TopMost = true;
 		}
 
+		void HideWindowIcon ()
+		{
+			// NOTE: in mono & linux, this hides the default icon, but a "form icon" is shown instead, XXX can that be disabled or is that a bug?
+			this.ShowIcon = false;
+		}
+
 		/**
 		 * Disable all key input from switching focus away from this application
 		 */
 		protected override bool ProcessCmdKey (ref Message msg, Keys keyData)
 		{
 			return true;
+		}
+
+		/** 
+		 * Moves mouse cursor at center width, and below the buttons
+		 */
+		private void PlaceMouseCursor ()
+		{
+			this.Cursor = new Cursor (Cursor.Current.Handle);
+			Cursor.Position = new Point (this.Width / 2, (this.Height / 2) + 200);
+			Cursor.Clip = new Rectangle (this.Location, this.Size);
 		}
 
 		private void DrawWindow ()
@@ -58,6 +76,11 @@ namespace CatLock
 			SetWindowOnTop ();
 
 			GoFullScreen ();
+
+			HideWindowIcon ();
+
+			PlaceMouseCursor ();
+
 
 			this.Deactivate += new EventHandler (delegate(object sender, EventArgs ea) {
 				Console.WriteLine ("Application deactivated");
