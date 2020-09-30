@@ -1,4 +1,4 @@
-## About
+## About :
 
 CatLock is a little utility to lock the screen from accidental input
 by my cats that tend to walk all over my keyboard.
